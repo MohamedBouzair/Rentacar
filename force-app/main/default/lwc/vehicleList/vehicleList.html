@@ -1,0 +1,18 @@
+<template>
+    <lightning-card title="Vehicle List" icon-name="standard:product">
+        <div class="slds-m-around_medium">
+            <lightning-layout multiple-rows>
+                <lightning-layout-item size="6" padding="around-small">
+                    <lightning-input type="search" label="Search Vehicle" onchange={handleSearch}></lightning-input>
+                </lightning-layout-item>
+            </lightning-layout>
+            <template if:true={data}>
+                <lightning-datatable key-field="Id" data={data} columns={columns} onrowaction={handleRowAction}>
+                </lightning-datatable>
+            </template>
+            <template if:true={error}>
+                {error}
+            </template>
+        </div>
+    </lightning-card>
+</template>

@@ -1,0 +1,26 @@
+<template>
+    <lightning-card  title="Informations sur le contrat" icon-name="standard:service_contract" >
+        <div class="slds-m-around_medium"  >
+            <template if:true={serviceContract}>
+                <div class="slds-grid slds-p-top_medium">
+                    <p class="slds-col">
+                        <strong>Nom du Client : </strong> {serviceContract.Account.Name}
+                    </p>
+                    <p class="slds-col">
+                        <strong>Nom du Contrat : </strong> {serviceContract.Name}
+                    </p>
+                </div>
+                <div class="slds-grid slds-p-top_medium">
+                    <p class="slds-col">
+                        <strong>Start Date : </strong> {serviceContract.StartDate}
+                    </p>
+                    <p class="slds-col">
+                        <strong>End Date : </strong> {serviceContract.EndDate}
+                    </p>
+                </div>
+            </template>
+        </div>
+    
+    </lightning-card>
+</template>
+
