@@ -1,12 +1,11 @@
 import { LightningElement, api, track, wire } from 'lwc';
-import getServiceContract from '@salesforce/apex/RentAppController.getServiceContract';
 
 
 export default class contractInfo extends LightningElement {
-    @api recordId;
+   /* @api recordId;
     @track serviceContract;
 
-    @wire(getServiceContract, { contractId: '$recordId'})
+    @wire(getServiceContract, { recordId: '$recordId'})
     wiredServiceContract({data,error}) {
         if (data) {
             this.serviceContract = data;
@@ -14,5 +13,5 @@ export default class contractInfo extends LightningElement {
         } else if(error){
             console.log(error);
         }
-    }
+    }*/
 }

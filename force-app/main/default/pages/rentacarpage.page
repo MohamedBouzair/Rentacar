@@ -1,0 +1,22 @@
+<apex:page standardController="ServiceContract" lightningStylesheets="true">
+    <!-- <script src="/lightning/lightning.out.js" /> -->
+    <apex:includeLightning/>
+    <!-- target div for placing component -->
+    <div id="mapDiv" />
+    <script>// load the components into memory
+        document.addEventListener('lightning__showtoast', event => {
+            sforce.one.showToast(event.toastAttributes);
+        });
+        $Lightning.use("c:rentApp", function () {
+            // invoke the components and place on page
+            $Lightning.createComponent("c:vehicleList", // name of component to create
+                {
+                    recordId: "{!$CurrentPage.parameters.id}"
+                }, // optional component props
+                "mapDiv" // HTML ID where to put component
+            );
+        });
+        
+        
+    </script>
+</apex:page>
