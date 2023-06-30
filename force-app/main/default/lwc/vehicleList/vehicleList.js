@@ -3,180 +3,102 @@ import getVehicles from '@salesforce/apex/RentAppController.getVehicles';
 import addVehicleToCurrentServiceContract from '@salesforce/apex/RentAppController.addVehicleToCurrentServiceContract';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
-const columns = [
-    {
-        label: 'Nom du véhicule',
-        fieldName: 'vehicleName',
-        type: 'text',
-        sortable: true
-    },
-    {
-        label: 'Type de véhicule',
-        fieldName: 'type',
-        type: 'text',
-        sortable: true
-    },
-    {
-        label: 'Modèle-Année du véhicule',
-        fieldName: 'modele',
-        type: 'text',
-        sortable: true
-    },
-    {
-        label: 'Couleur du véhicule',
-        fieldName: 'color',
-        type: 'text',
-        sortable: true
-    },
-    {
-        label: 'prix à l\'unité',
-        fieldName: 'priceunit',
-        type: 'Decimal',
-        sortable: true
-    },
-    {
-    label: 'Prix de vente',
-    fieldName: 'salesPrice',
-    type: 'Decimal',
-    editable: true,
-    sortable: true
-    },
-];
 
 export default class Vehicles extends LightningElement {
 
+    @track searchString;
+    @track initialRecords;
     @api recordId;
     @track filter = ['','','',''];
     @track selectedVehicles = [];
     @track data;
-    columns = columns;
-    vehicles;
-    error;
-
+    @track error;
+    defaultSortDirection = 'asc';
+    sortDirection = 'asc';
+    sortedBy;
+    @track columns = [
+        {
+            label: 'Nom du véhicule',
+            fieldName: 'Name',
+            type: 'text',
+            sortable: true
+        },
+        {
+            label: 'Type de véhicule',
+            fieldName: 'Type',
+            type: 'text',
+            sortable: true
+        },
+        {
+            label: 'Modèle-Année du véhicule',
+            fieldName: 'Modele',
+            type: 'text',
+            sortable: true
+        },
+        {
+            label: 'Couleur du véhicule',
+            fieldName: 'Color',
+            type: 'text',
+            sortable: true
+        },
+        {
+            label: 'prix à l\'unité',
+            fieldName: 'unitPrice',
+            type: 'Decimal',
+            sortable: true
+        },
+        {
+            label: 'Prix de vente',
+            fieldName: 'salesPrice',
+            type: 'Decimal',
+            editable: true,
+            sortable: true
+        },
+    ];
 
     @wire(getVehicles, {recordId: '$recordId', filter: '$filter'})
-    wired_Method(result) {
-        console.log(JSON.stringify(result));
-        let data = result.data;
-        if(data){
-            console.log(JSON.stringify(data));
-            console.log('Voici ma data: ' + data);
-
-            // this.data = result.data;
-            this.vehicles = this.data.vehicles;
-            console.log('Véhicules: ' + JSON.stringify(vehicles));
-            this.error = undefined;
-            console.log('recordId', this.recordId);
-            console.log('data', data);
-        } else if(result.error){
-            this.error = result.error;
-            this.data = undefined;
-            console.log('error', error);
-        }
-    }
-
-    handleDraftValues(event) {
-        console.log('draft ', event.detail.draftValues);
-
-        let draftData = event.detail.draftValues;
-        let tempData = this.vehicles.map( element => {
-            let temp = Object.assign({},element);
-             draftData.forEach(e => {
-                if(temp.Id === e.Id){
-                    if(e.salesPrice >= temp.unitPrice){
-                        temp.salesPrice = e.salesPrice;
-                    }else if(e.salesPrice < temp.unitPrice){
-                        this.showToast("Error", "Le prix de vente ne peut pas être inférieur au prix unitaire !!!", "error");
-                    }
-                }
-        });
-        return temp;
-        });
-
-        this.vehicles=tempData;
-        console.log('tempdata ',this.vehicles);
-        this.draftValues = [];
-
-    }
-  
-    handelFilter(event){
-        this.filter=event.detail.filter;
-    }
-
-    handleSave(){
-        this.selectedVehicles =this.template.querySelector('lightning-datatable').getSelectedRows();
-        if(this.selectedVehicles.length>0){
-            addVehicleToCurrentServiceContract({vehicles: this.selectedVehicles, serviceContractId: this.recordId}).then(result => {
-                if(result==='Vendu')
-                {
-                    
-                    window.history.back();
-
-                }   
-                if(result==='Vente échouée')
-                {
-                    const event = new ShowToastEvent({ title: 'ERREUR',message:'Le prix de vente ne peut pas être inférieur au prix unitaire !!',variant:"error"});
-                    this.dispatchEvent(event);
-                }
-                if (result==='Echec')
-                {
-                    const event = new ShowToastEvent({ title: 'ERREUR',message:'Impossible de louer plus qu\'une voiture !!',variant:"error"});
-                    this.dispatchEvent(event); 
-                }
-                   
-            })
-                .catch(error => {
-                    const event = new ShowToastEvent({ title: 'ERREUR',message:'Impossible d\'enregistrer !!',variant:"error"});
-                    this.dispatchEvent(event);
-                    console.log('error is : ',error);
-                })
-        }else {
-            const event = new ShowToastEvent({ title: 'ERREUR',message:'Vous devez sélectionner un véhicule avant d\'enregistrer !!',variant:"error"});
-                    this.dispatchEvent(event);
-        }
-
-        }  
-  
-
-    handleCancel(){
-        window.history.back();
-    }
-}
-
-
-
-
-
-/*const columns = [
-    { label: 'Nom', fieldName: 'Name' },
-    { label: 'Modèle', fieldName: 'Modele__c' },
-    { label: 'Type', fieldName: 'Type__c' },
-    { label: 'Couleur', fieldName: 'Couleur__c' },
-    { label: 'Nombre de personne', fieldName: 'Nombre_de_personne__c' },
-    { label: 'Prix d\'achat Minimal', fieldName: 'Prix_d_achat_Min__c', editable: true },
-    { label: 'Prix d\'achat', fieldName: 'Prix_d_achat__c', editable: true },
-];
- 
-export default class vehicleList extends LightningElement {
-    @track data;
-    @track error;
-    @track columns = columns;
-    @track searchString;
-    @track initialRecords;
- 
-    @wire(getVehicle)
     wiredVehicle({ error, data }) {
+        console.log(JSON.stringify(data));
         if (data) {
-            console.log(data);
-            this.data = data;
+            console.log('Véhicules trouvée');
+            let tempRecords = JSON.parse( JSON.stringify( data ) );
+            tempRecords = tempRecords.map( row => {
+                return { ...row, Name: row.Product2.Name, Type: row.Product2.Type__c, Modele: row.Product2.Modele__c, Color: row.Product2.Couleur__c, unitPrice: row.Product2.Prix_d_achat_Min__c, salesPrice: row.Product2.Prix_d_achat__c };
+            })
+            this.data = tempRecords;
             this.initialRecords = data;
-            this.error = undefined;
         } else if (error) {
-            this.error = error;
-            this.data = undefined;
+            console.log(JSON.stringify(error));
+            console.log('Véhicules non trouvée');
         }
     }
- 
+
+    sortBy(field, reverse, primer) {
+        const key = primer
+            ? function (x) {
+                  return primer(x[field]);
+              }
+            : function (x) {
+                  return x[field];
+              };
+
+        return function (a, b) {
+            a = key(a);
+            b = key(b);
+            return reverse * ((a > b) - (b > a));
+        };
+    }
+
+    onHandleSort(event) {
+        const { fieldName: sortedBy, sortDirection } = event.detail;
+        const cloneData = [...this.data];
+
+        cloneData.sort(this.sortBy(sortedBy, sortDirection === 'asc' ? 1 : -1));
+        this.data = cloneData;
+        this.sortDirection = sortDirection;
+        this.sortedBy = sortedBy;
+    }
+
     handleSearch(event) {
         const searchKey = event.target.value.toLowerCase();
  
@@ -250,4 +172,68 @@ export default class vehicleList extends LightningElement {
     showRowDetails(row) {
         this.record = row;
     }
-}*/
+
+    handleDraftValues(event) {
+        console.log('draft ', event.detail.draftValues);
+
+        let draftData = event.detail.draftValues;
+        let tempData = this.vehicles.map( element => {
+            let temp = Object.assign({},element);
+             draftData.forEach(e => {
+                if(temp.Id === e.Id){
+                    if(e.salesPrice >= temp.unitPrice){
+                        temp.salesPrice = e.salesPrice;
+                    }else if(e.salesPrice < temp.unitPrice){
+                        this.showToast("Error", "Le prix de vente ne peut pas être inférieur au prix unitaire !!!", "error");
+                    }
+                }
+        });
+        return temp;
+        });
+
+        this.vehicles=tempData;
+        console.log('tempdata ',this.vehicles);
+        this.draftValues = [];
+
+    }
+  
+    handelFilter(event){
+        this.filter=event.detail.filter;
+    }
+
+    handleSave(){
+        this.selectedVehicles =this.template.querySelector('lightning-datatable').getSelectedRows();
+        if(this.selectedVehicles.length>0){
+            addVehicleToCurrentServiceContract({vehicles: this.selectedVehicles, serviceContractId: this.recordId}).then(result => {
+                
+                if(result==='Vendu')
+                {
+                    
+                    window.history.back();
+
+                }   
+                if(result==='Vente échouée')
+                {
+                    const event = new ShowToastEvent({ title: 'ERREUR',message:'Le prix de vente ne peut pas être inférieur au prix unitaire !!',variant:"error"});
+                    this.dispatchEvent(event);
+                }
+                   
+            })
+                .catch(error => {
+                    const event = new ShowToastEvent({ title: 'ERREUR',message:'Impossible d\'enregistrer !!',variant:"error"});
+                    this.dispatchEvent(event);
+                    console.log('error is : ',error);
+                })
+        }else {
+            const event = new ShowToastEvent({ title: 'ERREUR',message:'Vous devez sélectionner un véhicule avant d\'enregistrer !!',variant:"error"});
+                    this.dispatchEvent(event);
+        }
+
+    } 
+     
+  
+
+    handleCancel(){
+        window.history.back();
+    }
+}

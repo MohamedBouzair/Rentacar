@@ -32,7 +32,7 @@ export default class RentACarFilter extends LightningElement {
             
         }
         else if(error) {
-            window.console.log('Error ===> '+JSON.stringify(error));
+            console.log('Error ===> '+JSON.stringify(error));
             this.options = optionsValues;
         }
     }

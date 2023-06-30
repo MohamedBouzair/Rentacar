@@ -1,77 +1,30 @@
 <template>
-    <lightning-card  title="Informations sur le contrat" icon-name="standard:service_contract" >
-        <div class="slds-m-around_medium"  >
-            <template if:true={data}>
-                <div class="slds-grid slds-p-top_medium">
-                    <p class="slds-col">
-                        <strong>Nom du Client : </strong> {data.sc.Account.Name}
-                    </p>
-                    <p class="slds-col">
-                        <strong>Nom du Contrat : </strong> {data.sc.Name}
-                    </p>
-                </div>
-                <div class="slds-grid slds-p-top_medium">
-                    <p class="slds-col">
-                        <strong>Start Date : </strong> {data.sc.StartDate}
-                    </p>
-                    <p class="slds-col">
-                        <strong>End Date : </strong> {data.sc.EndDate}
-                    </p>
-                </div>
-            </template>
-        </div>
-    
-    </lightning-card>
     <lightning-layout-item padding="around-small" size="12">
-            <c-rent-a-car-filter onfilter={handelFilter} > </c-rent-a-car-filter> 
-    </lightning-layout-item>      
-    <lightning-card  title="Tableau des véhicules :" icon-name="custom:custom31" >
-    <div class="slds-media__figure" >
-        <template if:true={vehicles}>
-            <lightning-datatable data={vehicles} columns={columns} key-field="Id" onsave={handleDraftValues} draft-values={draftValues}>
-            </lightning-datatable>
-        </template>
-        <template if:true={error}>
-            {error}
-        </template>
-    </div>
-    <br>
-    <div class="slds-align_absolute-center">
-        <lightning-button label="Save" variant="success" icon-name="utility:save" type="submit" onclick={handleSave} class="slds-m-left_x-small"></lightning-button>
-        <lightning-button label="Cancel" variant="destructive"  type="cancel" onclick={handleCancel} class="slds-m-left_x-small"  ></lightning-button>  
-      </div>
-    </lightning-card>
-</template>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!--<template>
-    <lightning-card title="Vehicle List" icon-name="standard:product">
+        <c-rent-a-car-filter onfilter={handelFilter} > </c-rent-a-car-filter> 
+    </lightning-layout-item>
+    <lightning-card title="Liste des véhicules" icon-name="standard:product">
         <div class="slds-m-around_medium">
             <lightning-layout multiple-rows>
                 <lightning-layout-item size="6" padding="around-small">
-                    <lightning-input type="search" label="Search Vehicle" onchange={handleSearch}></lightning-input>
+                    <lightning-input type="search" label="Recherche générale" onchange={handleSearch}></lightning-input>
                 </lightning-layout-item>
             </lightning-layout>
             <template if:true={data}>
-                <lightning-datatable key-field="Id" data={data} columns={columns} onrowaction={handleRowAction}>
+                <lightning-datatable key-field="Id" data={data} columns={columns} onrowaction={handleRowAction} onsave={handleDraftValues} draft-values={draftValues} 
+                                    default-sort-direction={defaultSortDirection}
+                                    sorted-direction={sortDirection}
+                                    sorted-by={sortedBy}
+                                    onsort={onHandleSort}>
                 </lightning-datatable>
             </template>
             <template if:true={error}>
-                {error}
+                <p>Data non trouvée.</p>
             </template>
         </div>
+        <br>
+        <div class="slds-align_absolute-center">
+            <lightning-button label="Save" variant="success" icon-name="utility:save" type="submit" onclick={handleSave} class="slds-m-left_x-small"></lightning-button>
+            <lightning-button label="Cancel" variant="destructive"  type="cancel" onclick={handleCancel} class="slds-m-left_x-small"  ></lightning-button>  
+        </div>
     </lightning-card>
-</template> -->
+</template>
