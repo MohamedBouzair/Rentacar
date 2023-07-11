@@ -1,16 +1,27 @@
-<apex:page Controller="SendEmailController" sidebar="false" lightningStylesheets="true">
-    <apex:includeLightning/>
-    <apex:pageBlock title="Informations sur le Contrat">
-        <p>
-            <strong> Nom du contrat :</strong> {!myContract.Name}</p>
-        <p>
-            <strong> Email du contact :</strong> {!myContract.Contact.Email}</p>
-        <p>
-            <strong> Nom du Client :</strong> {!myContract.Account.Name}</p>
-        <br/>
-        <apex:form>
-            <apex:commandButton value="Envoyer l'e-mail" action="{!sendEmail}"> </apex:commandButton>
-            <apex:commandButton value="Cancel" action="{!okCancel}"> </apex:commandButton>
-        </apex:form>
-    </apex:pageBlock>
+<apex:page standardController="ServiceContract" extensions="SendEmailController" sidebar="false" lightningStylesheets="true">
+    <apex:form style="border-style:solid;border-width:2px; border-color:rgb(58, 58, 183); background-color:lightgrey">
+        <apex:pageBlock title="Informations sur le Contrat">
+
+            <p>
+                <strong> Nom du contrat :</strong> {!servContract.Name}</p>
+            <p>
+                <strong> Email du contact :</strong> {!servContract.Contact.Email}</p>
+            <p>
+                <strong> Nom du Client :</strong> {!servContract.Account.Name}</p>
+            <br/>
+            <p> Objet du mail : </p>
+            <apex:inputText label="Subject" value="{!emailSubject}" id="emailSubject"> </apex:inputText>
+            <br/>
+            <br/>
+            <p> Corps du mail : </p>
+            <apex:inputTextarea label="Body" value="{!emailBody}" id="emailBody" style="width: 500px; height: 200px"> </apex:inputTextarea>
+
+            <apex:pageBlockButtons location="bottom">
+
+                <apex:commandButton value="Envoyer l'e-mail" action="{!sendEmail}"> </apex:commandButton>
+                <apex:commandButton value="Cancel" action="{!cancel}"> </apex:commandButton>
+
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
 </apex:page>

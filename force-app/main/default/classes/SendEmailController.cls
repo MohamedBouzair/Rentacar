@@ -1,46 +1,49 @@
 public class SendEmailController {
 
-    public ServiceContract myContract { get; set; }
+    public ServiceContract servContract {get; set;}
+    public String emailSubject {get; set;}
+   	public String emailBody {get; set;}
     public ApexPages.StandardSetController setCon {get; private set;}
-    public ApexPages.StandardSetController stdSetController { get; set; }
 
-    public SendEmailController() {
+    public SendEmailController(ApexPages.StandardController stdController) {
         System.debug('Id :  '+ApexPages.CurrentPage().getParameters());
-        ServiceContract servicecontract = (ServiceContract) stdSetController.getRecord();
-        // Récupération des données du contrat
-        this.myContract = [SELECT Id,Name, Account.Name, Contact.Email, StartDate, EndDate, (SELECT UnitPrice, TotalPrice, Quantity,Product2.Name FROM ContractLineItems ) FROM ServiceContract WHERE Id=: servicecontract.Id LIMIT 1];
+        ServiceContract myservicecontract = (ServiceContract) stdController.getRecord(); 
+        System.debug('id 2 :  ' + myservicecontract);
+        this.servContract = [SELECT Id, Account.Name, Contact.Email, Name, StartDate, EndDate, (SELECT UnitPrice, TotalPrice, Quantity, Product2.Name FROM ContractLineItems ) FROM ServiceContract WHERE Id=: myservicecontract.Id LIMIT 1];
 
     }
 
     public PageReference sendEmail(){
-        // Générer le PDF de la VFP
-        PageReference pdfPage = Page.ContractDetailsPage;
-        pdfPage.getParameters().put('id', myContract.Id);
-        Blob pdfBlob;
+        // putting the infos we need in place
+        Messaging.EmailFileAttachment attach = new Messaging.EmailFileAttachment();
+       	Messaging.SingleEmailMessage sendemail=new Messaging.SingleEmailMessage();
+		String[] sendingTo = new String[]{servContract.Contact.Email};
+		sendemail.setToAddresses(sendingTo);
+		sendemail.setSubject(emailSubject);
+		sendemail.setPlainTextBody(emailBody);
+        
+       	PageReference pref = page.ContractDetailsPage;
+       	pref.getParameters().put('id',servContract.id);
+       	pref.setRedirect(true);
+        Blob b ;
         if(!Test.isRunningTest()){
-            pdfBlob = pdfPage.getContent();
+            b = pref.getContent();
         }else{
-            pdfBlob = blob.valueof('TEST');
+            b = blob.valueof('TEST');
         }
-
-        // Envoyer l'e-mail avec le PDF en pièce jointe
-        Messaging.EmailFileAttachment attachment = new Messaging.EmailFileAttachment();
-        attachment.setFileName(myContract.Name + '.pdf');
-        attachment.setBody(pdfBlob);
-        
-        Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
-        String[] sendEmailTo = new String[]{myContract.Contact.Email};
-        email.setToAddresses(sendEmailTo);
-        email.setSubject('Détails du contrat');
-        email.setPlainTextBody('Veuillez trouver ci-joint les détails du contrat.');
-        email.setFileAttachments(new Messaging.EmailFileAttachment[]{attachment});
-        
-        Messaging.sendEmail(new Messaging.SingleEmailMessage[]{email});
-        
+        // preparing our email to send 
+        attach.setFileName(servContract.Name +'.pdf'); 
+       	attach.setBody(b);
+       	sendemail.setFileAttachments(new Messaging.EmailFileAttachment[]{attach});
+        //sending the email 
+        List<Messaging.SendEmailResult> results = Messaging.sendEmail(new Messaging.SingleEmailMessage[] {sendemail});
+        if(results[0].isSuccess()){
+			PageReference pageRef = new PageReference('/'+servContract.id);
+       		pageRef.setRedirect(true);
+            System.debug('mail is sent ');
+			return pageRef;
+		}
+        System.debug('mail is not sent ');
         return null;
     }
-
-    public pageReference okCancel() {
-        return setCon.cancel();
-    } 
 }

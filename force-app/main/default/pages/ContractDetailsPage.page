@@ -1,52 +1,46 @@
-<apex:page Controller="SendEmailController" renderAs="PDF">
+<apex:page standardController="ServiceContract" extensions="SendEmailController" renderAs="PDF">
     <apex:pageBlock title=" Votre Contrat :" >
         <apex:pageBlockSection title=" Informations sur le contrat : " >
             <apex:pageBlockSectionItem>
-                <p><strong> Le Nom du Contrat :</strong> {!myContract.Name}</p>
+                <p><strong> Le Nom du Contrat :</strong> {!servContract.Name}</p>
             </apex:pageBlockSectionItem>
-
             <apex:pageBlockSectionItem>
-                <p><strong> Votre contrat commencera à la date de  :</strong> {!myContract.StartDate}</p>
+                <p><strong> Votre contrat commencera à la date de  :</strong> {!servContract.StartDate}</p>
             </apex:pageBlockSectionItem>
-
             <apex:pageBlockSectionItem>
-                <p><strong> Votre contrat prendra fin à la date de  :</strong> {!myContract.EndDate}</p>
+                <p><strong> Votre contrat prendra fin à la date de  :</strong> {!servContract.EndDate}</p>
             </apex:pageBlockSectionItem>
         </apex:pageBlockSection>
-
         <apex:pageBlockSection title="Informations du Client" >
             <apex:pageBlockSectionItem>
-                <p><strong> Nom du Client :</strong> {!myContract.Account.Name}</p>
+                <p><strong> Nom du Client :</strong> {!servContract.Account.Name}</p>
             </apex:pageBlockSectionItem>
-
             <apex:pageBlockSectionItem>
-                <p><strong> E-mail du Client :</strong> {!myContract.Contact.Email}</p>
-            </apex:pageBlockSectionItem>
+                <p><strong> E-mail du Client :</strong> {!servContract.Contact.Email}</p>
+            </apex:pageBlockSectionItem>     
         </apex:pageBlockSection>
-
-        <apex:pageBlockSection title="Véhicules loués" >
-            <apex:dataTable value="{!myContract.ContractLineItems}" var="cli">
-
+        <apex:pageBlockSection title="Contract Line Item " >
+            <apex:dataTable value="{!servContract.ContractLineItems}" var="cli" >
                 <apex:column >
                     <apex:facet name="header"> Nom du véhicule : </apex:facet>
                     <apex:outputText value="{!cli.Product2.Name}"/>
                 </apex:column>
-
                 <apex:column >
                     <apex:facet name="header"> Le prix unitaire : </apex:facet>
                     <apex:outputText value="{!cli.UnitPrice}"/>
                 </apex:column>
-
                 <apex:column >
                     <apex:facet name="header"> La quantité : </apex:facet>
                     <apex:outputText value="{!cli.Quantity}"/>
                 </apex:column>  
-
                 <apex:column >
                     <apex:facet name="header"> Le prix total : </apex:facet>
                     <apex:outputText value="{!cli.TotalPrice}"/>
-                </apex:column>    
-            </apex:dataTable>
+                </apex:column>
+                           
+     </apex:dataTable>
+           
+
         </apex:pageBlockSection>
     </apex:pageBlock>
 </apex:page>
