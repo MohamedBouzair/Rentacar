@@ -15,19 +15,21 @@ public with sharing class RentAppController {
         // Récupération des champs nécessaires de l'objet service contract
         ServiceContract serviceContract = getServiceContract(recordId);
         System.debug(serviceContract);
-        List<ContractLineItem> c = new List<ContractLineItem>();
-        for(ContractLineItem cl : [SELECT StartDate, EndDate FROM ContractLineItem]){
-            if(serviceContract.StartDate>cl.EndDate || serviceContract.EndDate<cl.StartDate){
-                c.add(cl);
+        
+        List<PriceBookEntry> vehicleList = new List<PriceBookEntry>([SELECT Id, Name FROM PriceBookEntry WHERE Id NOT IN (SELECT PriceBookEntryId FROM ContractLineItem)]);
+        Set<Id> vehicleIds = new Set<Id>();
+        for (PriceBookEntry vehicle : vehicleList) {
+            vehicleIds.add(vehicle.Id);
+        }
+        List<ContractLineItem> contractLineItems = [SELECT PriceBookEntryId, StartDate, EndDate, ServiceContractId FROM ContractLineItem];
+        for(ContractLineItem clItems : contractLineItems){
+            if(serviceContract.Id != clItems.ServiceContractId && (serviceContract.StartDate > clItems.EndDate || serviceContract.EndDate < clItems.StartDate)){
+                vehicleIds.add(clItems.PriceBookEntryId);
             }
         }
-        Set<Id> ids = new Set<Id>();
-        for(ContractLineItem clItems: c){
-            ids.add(clItems.Id);
-        }
-        System.debug('My set: ' + ids);
-        // Génération d'une requête SOQL pour sélectionner les véhicules qui n'ont pas été ajoutés à un contrat à partir de PriceBookEntry
-        String query = 'SELECT Id, Pricebook2Id, Product2.Id, Product2.RecordTypeId, Product2.Name, Product2.Modele__c, Product2.Couleur__c, Product2.Type__c, Product2.Prix_d_achat__c, Product2.Prix_d_achat_Min__c, UnitPrice FROM PriceBookEntry WHERE PriceBook2Id = \''+priceB.Id+'\''+' AND Id IN :ids';
+        System.debug('My set: ' + vehicleIds);
+        // Génération d'une requête SOQL pour sélectionner les véhicules disponible
+        String query = 'SELECT Id, Pricebook2Id, Product2.Id, Product2.RecordTypeId, Product2.Name, Product2.Modele__c, Product2.Couleur__c, Product2.Type__c, Product2.Prix_d_achat__c, Product2.Prix_d_achat_Min__c, UnitPrice FROM PriceBookEntry WHERE PriceBook2Id = \''+priceB.Id+'\''+' AND Id IN :vehicleIds';
 
         if(filter[0]!='' && filter[0]!='0'){
             query += ' AND Product2.RecordTypeId = \''+filter[0]+'\'';

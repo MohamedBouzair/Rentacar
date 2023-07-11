@@ -1,0 +1,16 @@
+<apex:page Controller="SendEmailController" sidebar="false" lightningStylesheets="true">
+    <apex:includeLightning/>
+    <apex:pageBlock title="Informations sur le Contrat">
+        <p>
+            <strong> Nom du contrat :</strong> {!myContract.Name}</p>
+        <p>
+            <strong> Email du contact :</strong> {!myContract.Contact.Email}</p>
+        <p>
+            <strong> Nom du Client :</strong> {!myContract.Account.Name}</p>
+        <br/>
+        <apex:form>
+            <apex:commandButton value="Envoyer l'e-mail" action="{!sendEmail}"> </apex:commandButton>
+            <apex:commandButton value="Cancel" action="{!okCancel}"> </apex:commandButton>
+        </apex:form>
+    </apex:pageBlock>
+</apex:page>

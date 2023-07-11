@@ -13,7 +13,8 @@ public with sharing class OpportunityTriggerHandler {
                 contractMap.put(oppList.Id, new ServiceContract(Name = oppList.Name, 
                                                                 AccountId = oppList.AccountId, 
                                                                 StartDate = oppList.FromDate__c, 
-                                                                EndDate = oppList.ToDate__c, 
+                                                                EndDate = oppList.ToDate__c,
+                                                                Pricebook2Id = oppList.Pricebook2Id,
                                                                 Statut__c = 'Brouillon'));
                 System.debug('Le contrat a été créer avec succès !');
             } else {

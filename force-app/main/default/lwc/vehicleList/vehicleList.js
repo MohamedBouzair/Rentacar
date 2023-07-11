@@ -217,6 +217,11 @@ export default class Vehicles extends LightningElement {
                     const event = new ShowToastEvent({ title: 'ERREUR',message:'Le prix de vente ne peut pas être inférieur au prix unitaire !!',variant:"error"});
                     this.dispatchEvent(event);
                 }
+                if (result==='Echec')
+                {
+                    const event = new ShowToastEvent({ title: 'ERREUR',message:'Impossible de louer plus qu\'une voiture !!',variant:"error"});
+                    this.dispatchEvent(event); 
+                }
                    
             })
                 .catch(error => {
